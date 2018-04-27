@@ -1,5 +1,7 @@
 package dal;
 
+import java.time.LocalDate;
+
 public class Employee {
 
 	public int employeeId;
@@ -7,10 +9,9 @@ public class Employee {
 	public String lastName;
 	public String email;
 	public String phoneNumber;
-	public String hireDate;
+	public LocalDate hireDate;
 	public String jobId;
-	public float salary;
-	public float commisionPct;
+	public int salary;
 	public int managerId;
 	public int departmentId;
 	
@@ -60,14 +61,6 @@ public class Employee {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public String getHireDate() {
-		return hireDate;
-	}
-
-	public void setHireDate(String hireDate) {
-		this.hireDate = hireDate;
-	}
-
 	public String getJobId() {
 		return jobId;
 	}
@@ -76,20 +69,12 @@ public class Employee {
 		this.jobId = jobId;
 	}
 
-	public float getSalary() {
+	public int getSalary() {
 		return salary;
 	}
 
-	public void setSalary(float salary) {
+	public void setSalary(int salary) {
 		this.salary = salary;
-	}
-
-	public float getCommisionPct() {
-		return commisionPct;
-	}
-
-	public void setCommisionPct(float commisionPct) {
-		this.commisionPct = commisionPct;
 	}
 
 	public int getManagerId() {
@@ -106,5 +91,13 @@ public class Employee {
 
 	public void setDepartmentId(int departmentId) {
 		this.departmentId = departmentId;
+	}
+
+	public LocalDate getHireDate() {
+		return hireDate;
+	}
+
+	public void setHireDate(LocalDate hireDate) {
+		this.hireDate = hireDate;
 	}
 }
