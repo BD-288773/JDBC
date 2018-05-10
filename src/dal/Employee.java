@@ -4,16 +4,18 @@ import java.time.LocalDate;
 
 public class Employee {
 
-	public int employeeId;
-	public String firstName;
-	public String lastName;
-	public String email;
-	public String phoneNumber;
-	public LocalDate hireDate;
-	public String jobId;
-	public int salary;
-	public int managerId;
-	public int departmentId;
+	private int employeeId;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private String phoneNumber;
+	private LocalDate hireDate;
+	private String jobId;
+	private float salary;
+	private float commisionpct;
+	private int managerId;
+	private int departmentId;
+	private boolean isNull;
 	
 	public Employee() {}
 	
@@ -69,11 +71,11 @@ public class Employee {
 		this.jobId = jobId;
 	}
 
-	public int getSalary() {
+	public float getSalary() {
 		return salary;
 	}
 
-	public void setSalary(int salary) {
+	public void setSalary(float salary) {
 		this.salary = salary;
 	}
 
@@ -99,5 +101,25 @@ public class Employee {
 
 	public void setHireDate(LocalDate hireDate) {
 		this.hireDate = hireDate;
+	}
+	
+	public String toString() {
+		return employeeId + " | " + firstName + " | " + lastName + " | " + email + " | " + phoneNumber + " | " + hireDate.toString() + " | " + jobId + " | " + salary + " | " + managerId + " | " + departmentId;
+	}
+
+	public float getCommisionpct() {
+		return commisionpct;
+	}
+
+	public void setCommisionpct(float commisionpct) {
+		this.commisionpct = commisionpct;
+	}
+
+	public boolean isNull() {
+		return isNull;
+	}
+
+	public void setNull(boolean isNull) {
+		this.isNull = isNull;
 	}
 }

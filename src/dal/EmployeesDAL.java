@@ -16,7 +16,8 @@ public class EmployeesDAL {
 			
 			List<Employee> employees= new ArrayList<Employee>();
 			
-			try (Statement statement =oconn.getConn().createStatement();) {
+			
+			try (Statement statement = oconn.getConn().createStatement();) {
 				String query = "SELECT * FROM EMPLOYEES";
 				ResultSet resultSet = statement.executeQuery(query);
 				while (resultSet.next()) {
@@ -24,7 +25,8 @@ public class EmployeesDAL {
 				}
 			}
 			
-			catch (SQLException ex ) { System.out.println(ex); }
+			catch (SQLException ex ) { this.ex=ex; return null; }
+			
 			return employees;
 		}
 		
@@ -41,7 +43,7 @@ public class EmployeesDAL {
 				emp.setHireDate(resultSet.getDate(col++).toLocalDate());
 				emp.setJobId(resultSet.getNString(col++));
 				emp.setSalary(resultSet.getInt(col++));
-				col++;
+				emp.setCommisionpct(resultSet.getFloat(col++));
 				emp.setManagerId(resultSet.getInt(col++));
 				emp.setDepartmentId(resultSet.getInt(col++));
 
@@ -50,7 +52,6 @@ public class EmployeesDAL {
 			catch (SQLException ex ) {
 				this.ex = ex;
 				}
-			
 			return emp;
 			
 		}
@@ -58,22 +59,22 @@ public class EmployeesDAL {
 		public int updateEmployee(Employee emp, OraConn oconn) {
 			try (Statement statement =
 			oconn.getConn().createStatement(); ) {
-			DateTimeFormatter dtf =
-			DateTimeFormatter.ofPattern("yyyyMMdd");
-			String hireDate = dtf.format(emp.getHireDate());
-			String query = "UPDATE EMPLOYEES SET "
-			+ "FIRS_NAME = '" + emp.getFirstName() + "', "
-			+ "LAST_NAME = '" + emp.getLastName() + "', "
-			+ "EMAIL = '" + emp.getEmail() + "', "
-			+ "PHONE_NUMBER = '" + emp.getPhoneNumber() + "', "
-			+ "HIRE_DATE = to_date('" + hireDate + "', 'yyyyMMdd') , "
-			+ "JOB_ID = '" + emp.getJobId() + "', "
-			+ "SALARY = '" + emp.getSalary() + "', "
-			+ "MANAGER_ID = '" + emp.getManagerId() + "', "
-			+ "DEPARTMENT_ID = '" + emp.getDepartmentId() + "', "
-			+ "WHERE "
-			+ "EMPLOYEE_ID = " + emp.getEmployeeId();
+			String query = String.format("UPDATE EMPLOYEES SET "
+			+ "FIRST_NAME = '%s', LAST_NAME = '%s', "
+			+ "EMAIL = '%s', PHONE_NUMBER = '%s', "
+			+ "HIRE_DATE = DATE '%s', JOB_ID = '%s'"
+			+ "SALARY = %f, COMMISSION_PCT = %f,"
+			+ "MANAGER_ID = %d, DEPARTMENT_ID = %d"
+			+ "WHERE EMPLOYEE_ID = %d",
+			emp.getFirstName(),	emp.getLastName(),
+			emp.getEmail(), emp.getPhoneNumber(),
+			DateTimeFormatter.ofPattern("yy-MM-dd").format(emp.getHireDate()),
+			emp.getJobId(), emp.getSalary(),
+			emp.getCommisionpct(), emp.getManagerId(),
+			emp.getDepartmentId(), emp.getEmployeeId());
 			int affectedRows = statement.executeUpdate(query);
+
+			System.out.println(emp.getSalary());
 			oconn.getConn().commit();
 			return affectedRows;
 			}
@@ -86,13 +87,37 @@ public class EmployeesDAL {
 			DateTimeFormatter dtf =
 			DateTimeFormatter.ofPattern("yyyyMMdd");
 			String hireDate = dtf.format(emp.getHireDate());
+			
+			Employee e=this.getEmployeeByEmployeeID(emp.getEmployeeId(), oconn);
+			
+			boolean y=false;
+			
+			while(y==false)
+			{
+				System.out.println("ads");
+				if(e==null)
+				{
+					y = true;
+					break;
+				}
+				else
+				{
+					System.out.println("ADS");
+					emp.setEmployeeId(emp.getEmployeeId()+1);
+					System.out.println("Adsaa");
+					e=this.getEmployeeByEmployeeID(emp.getEmployeeId(), oconn);	
+				}
+				
+				System.out.println(emp.getEmployeeId());
+			}
+						
 			String query = "INSERT INTO EMPLOYEES VALUES("
-			+ emp.getEmployeeId() + ","
-			+ emp.getFirstName() + "," + emp.getLastName() + ","
-			+ emp.getEmail() + "," + emp.getPhoneNumber() + ","
-			+ hireDate + "," + emp.getJobId() + ","
-			+ emp.getSalary() + "," + emp.getManagerId() + ","
-			+ emp.getDepartmentId() + "); ";
+			+ emp.getEmployeeId() + ", '"
+			+ emp.getFirstName() + "', '" + emp.getLastName() + "', '"
+			+ emp.getEmail() + "', '" + emp.getPhoneNumber() + "', to_date('"
+			+ hireDate + "', 'yyyyMMdd'), '" + emp.getJobId() + "',"
+			+ emp.getSalary() + "," + emp.getCommisionpct() + ","
+			+ emp.getManagerId() + "," + emp.getDepartmentId() + ")";
 			int affectedRows = statement.executeUpdate(query);
 			oconn.getConn().commit();
 			return affectedRows;
@@ -105,39 +130,32 @@ public class EmployeesDAL {
 			Employee emp = new Employee();
 			
 			try (Statement statement =oconn.getConn().createStatement();) {
-				String query = "SELECT * FROM EMPLOYEES";
+				String query = "SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID  = " + id;
 				ResultSet resultSet = statement.executeQuery(query);
-				int rs_id = 0;
-				while (resultSet.next()) {
-					
-					rs_id = getID(resultSet);
-					if(rs_id == id)
-						emp = rs2Employee(resultSet);
-				}
+				
+				resultSet.next();
+				emp = rs2Employee(resultSet);
+				
+				if(emp==null)
+					return null;
 			}
 			
-			catch (SQLException ex ) { System.out.println(ex); }
+			catch (SQLException ex ) { this.ex=ex; return null;}
 			return emp;
-		}
-		
-		private int getID(ResultSet resultSet) {
-			
-			int id=0;
-			try {
-				id = resultSet.getInt(1);
-			}
-			catch (SQLException ex ) {
-				this.ex = ex;
-				}
-			
-			return id;
-			
 		}
 		
 		public int delEmployee(Employee emp, OraConn oconn) {
 			try (Statement statement =
 			oconn.getConn().createStatement(); ) {
-			String query = "UPDATE FROM EMPLOYEES WHERE "
+				
+			Employee e = this.getEmployeeByEmployeeID(emp.getEmployeeId(), oconn);
+			
+			if(e==null)
+			{
+				return 0;
+			}
+			
+			String query = "DELETE FROM EMPLOYEES WHERE "
 			+ "EMPLOYEE_ID = " + emp.getEmployeeId();
 			int affectedRows = statement.executeUpdate(query);
 			oconn.getConn().commit();

@@ -10,8 +10,8 @@ public class test {
 		String s=oconn.getLog();
 		System.out.println(s + "\n");
 		//oconn.close();
-		s=oconn.getLog();
-		System.out.println(s + "\n");
+		//s=oconn.getLog();
+		//System.out.println(s + "\n");
 		oconn.setUser_name("ssidoruk");
 		oconn.open();
 		oconn.close();

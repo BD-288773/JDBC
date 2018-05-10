@@ -51,6 +51,7 @@ public class OraConn {
 			error_name = "Connection error" + ex.getMessage();
 			String info = new String("Error number: " + error_number + "; " + error_name +"\n");
 			log+=info;
+			return;
 		}
 		
 		log += "Connection established\n";
